@@ -123,8 +123,8 @@
        latex             ; writing papers in Emacs has never been so fun
        org               ; organize your plain life in plain text
        python            ; beautiful is better than ugly
-       (rust + lsp); Fe2O3.unwrap().unwrap().unwrap().unwrap()
-       (scala + lsp)             ; java, but good
+       ;; (rust + lsp)      ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       (scala + lsp)     ; java, but good
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        yaml              ; JSON, but readable
        zig               ; C, but simpler
