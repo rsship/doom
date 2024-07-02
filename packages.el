@@ -52,3 +52,4 @@
 (package! gruber-darker-theme)
 (package! multiple-cursors)
 (package! ein)
+(package! flycheck :disable t)
