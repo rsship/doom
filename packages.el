@@ -53,3 +53,4 @@
 (package! multiple-cursors)
 (package! ein)
 (package! flycheck :disable t)
+(package! evil-mc)

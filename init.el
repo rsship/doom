@@ -123,11 +123,11 @@
        latex             ; writing papers in Emacs has never been so fun
        org               ; organize your plain life in plain text
        python            ; beautiful is better than ugly
-       ;; (rust + lsp)      ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+       (rust + lsp)      ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        (scala + lsp)     ; java, but good
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        yaml              ; JSON, but readable
-       zig               ; C, but simpler
+       ;; zig               ; C, but simpler
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
@@ -158,7 +158,7 @@
        ;;(haskell +lsp)    ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
-       ;;(java +lsp)       ; the poster child for carpal tunnel syndrome
+       (java +lsp)       ; the poster child for carpal tunnel syndrome
        ;;javascript        ; all(hope(abandon(ye(who(enter(here))))))
        ;;julia             ; a better, faster MATLAB
        ;;kotlin            ; a better, slicker Java(Script)

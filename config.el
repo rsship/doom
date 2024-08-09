@@ -1,12 +1,13 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(setq user-full-name "Salih Bozkaya"
+(setq user-full-name "Salih Bozkaya aka (lord vader)"
        user-mail-address "bozkayasalih01x@gmail.com")
 
 (setq doom-leader-key "C-x"
       doom-localleader-key "C-x")
 
 (load-theme 'gruber-darker t)
+(set-frame-font "Iosevka 17" nil t)
 
 (setq display-line-numbers-type 'relative)
 
@@ -37,15 +38,13 @@
 (map! "C-x C-p" #'evil-window-up
       "C-x C-n" #'evil-window-down
       "C-x C-]" #'split-window-vertically
-      "C-x k" #'kill-current-buffer
+      "C-x C-k" #'kill-current-buffer
       "C-x 0" #'doom/window-maximize-buffer)
 
-(global-set-key (kbd "C-x l-d") #'mc/mark-next-like-this-word)
+(global-set-key (kbd "C-x SPC") 'rectangle-mark-mode)
 
 
-
-
-;;; custom elisp functions
+;;;;;; custom elisp functions
 
 ;;; comment in or out
 (defun toggle-comment-region ()
@@ -69,12 +68,7 @@
       (lambda (buf)
         (not (string-match-p doom-asterisk-buffer-regexp (buffer-name buf)))))
 
-(setq rustic-analyzer-command '("~/.cargo/bin/rust-analyzer"))
 
-;; Install required packages
-(unless (package-installed-p 'rust-mode)
-  (package-refresh-contents)
-  (package-install 'rust-mode))
 
 (unless (package-installed-p 'lsp-mode)
   (package-install 'lsp-mode))
@@ -86,19 +80,14 @@
   (setq sp-modeline-diagnostics-enable nil)
   (setq sp-signature-render-documentation nil)
   (setq sp-enable-symbol-highlighting nil)
-  (setq sp-headerline-breadcrumb-enable nil))
+  (setq sp-headerline-breadcrumb-enable nil)
+  (setq lsp-headerline-breadcrumb-enable nil)
+  (setq lsp-keymap-prefix "C-c l"))
 
 
 (unless (package-installed-p 'company)
   (package-install 'company))
 
-;; Configure Rust mode
-(require 'rust-mode)
-(add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-mode))
-
-;; Enable LSP for Rust
-(require 'lsp-mode)
-(add-hook 'rust-mode-hook #'lsp)
 
 ;; Enable Company mode for completion
 (require 'company)
@@ -129,3 +118,19 @@
               (my/focus-on-compilation-buffer (process-buffer proc) nil))))
 
 (global-set-key [remap compile] 'my/compilation-start-in-root)
+
+;;; rectangle mode visualization
+
+;; (defface my-rectangle-mark-face
+;;   '((t (:background "light blue" :extend t)))
+;;   "Face for rectangle-mark-mode that only highlights the cursor line.")
+
+;; (defun my-rectangle-mark-advice (&rest _)
+;;   "Advice to change rectangle-mark-mode face."
+;;   (if rectangle-mark-mode
+;;       (setq-local face-remapping-alist
+;;                   (cons '(region my-rectangle-mark-face) face-remapping-alist))
+;;     (setq-local face-remapping-alist
+;;                 (remove '(region my-rectangle-mark-face) face-remapping-alist))))
+
+;; (advice-add 'rectangle-mark-mode :after #'my-rectangle-mark-advice)
