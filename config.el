@@ -38,7 +38,7 @@
 (map! "C-x C-p" #'evil-window-up
       "C-x C-n" #'evil-window-down
       "C-x C-]" #'split-window-vertically
-      "C-x C-k" #'kill-current-buffer
+      "C-x k" #'kill-current-buffer
       "C-x 0" #'doom/window-maximize-buffer)
 
 (global-set-key (kbd "C-x SPC") 'rectangle-mark-mode)
@@ -70,8 +70,8 @@
 
 
 
-(unless (package-installed-p 'lsp-mode)
-  (package-install 'lsp-mode))
+;; (unless (package-installed-p 'lsp-mode)
+;;   (package-install 'lsp-mode))
 
 (after! lsp-mode
   (setq lsp-diagnostics-provider :none)
@@ -85,13 +85,16 @@
   (setq lsp-keymap-prefix "C-c l"))
 
 
-(unless (package-installed-p 'company)
-  (package-install 'company))
+;; (unless (package-installed-p 'company)
+;;   (package-install 'company))
 
 
 ;; Enable Company mode for completion
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
+
+(require 'yasnippet)
+(yas-global-mode 1)
 
 (defun my/compilation-start-in-root (command &optional comint)
   "Start compilation in the project's root directory and focus on the compilation window."
@@ -119,18 +122,27 @@
 
 (global-set-key [remap compile] 'my/compilation-start-in-root)
 
-;;; rectangle mode visualization
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->")         'mc/mark-next-like-this)
+(global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<")     'mc/mark-all-like-this)
+(global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
+(global-set-key (kbd "C-:")         'mc/skip-to-previous-like-this)
 
-;; (defface my-rectangle-mark-face
-;;   '((t (:background "light blue" :extend t)))
-;;   "Face for rectangle-mark-mode that only highlights the cursor line.")
+;;; dired mode
+(require 'dired)
+(setq-default dired-dwim-target t)
+(setq dired-listing-switches "-alh")
 
-;; (defun my-rectangle-mark-advice (&rest _)
-;;   "Advice to change rectangle-mark-mode face."
-;;   (if rectangle-mark-mode
-;;       (setq-local face-remapping-alist
-;;                   (cons '(region my-rectangle-mark-face) face-remapping-alist))
-;;     (setq-local face-remapping-alist
-;;                 (remove '(region my-rectangle-mark-face) face-remapping-alist))))
+;;; Move Text
+(require 'move-text)
+(global-set-key (kbd "M-n") 'move-text-down)
+(global-set-key (kbd "M-p") 'move-text-up)
 
-;; (advice-add 'rectangle-mark-mode :after #'my-rectangle-mark-advice)
+(use-package affe
+  :config
+  ;; Manual preview key for `affe-grep'
+  (consult-customize affe-grep :preview-key "M-."))
+
+(require 'affe)
+(global-set-key (kbd "C-x C-p") 'affe-find)
