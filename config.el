@@ -38,8 +38,7 @@
 (map! "C-x C-p" #'evil-window-up
       "C-x C-n" #'evil-window-down
       "C-x C-]" #'split-window-vertically
-      "C-x k" #'kill-current-buffer
-      "C-x 0" #'doom/window-maximize-buffer)
+      "C-x k" #'kill-current-buffer)
 
 (global-set-key (kbd "C-x SPC") 'rectangle-mark-mode)
 
@@ -70,9 +69,6 @@
 
 
 
-;; (unless (package-installed-p 'lsp-mode)
-;;   (package-install 'lsp-mode))
-
 (after! lsp-mode
   (setq lsp-diagnostics-provider :none)
   (setq sp-ui-sideline-enable nil)
@@ -84,11 +80,6 @@
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l"))
 
-
-;; (unless (package-installed-p 'company)
-;;   (package-install 'company))
-
-
 ;; Enable Company mode for completion
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
@@ -96,16 +87,21 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-(defun my/compilation-start-in-root (command &optional comint)
-  "Start compilation in the project's root directory and focus on the compilation window."
-  (interactive
-   (list
-    (read-from-minibuffer "Compile command: "
-                          (eval compile-command))
-    current-prefix-arg))
-  (let ((default-directory (or (projectile-project-root)
-                               default-directory)))
-    (compile command comint)))
+
+;;; root compilation
+
+;; (defun my/compilation-start-in-root (command &optional comint)
+;;   "Start compilation in the project's root directory and focus on the compilation window."
+;;   (interactive
+;;    (list
+;;     (read-from-minibuffer "Compile command: "
+;;                           (eval compile-command))
+;;     current-prefix-arg))
+;;   (let ((default-directory (or (projectile-project-root)
+;;                                default-directory)))
+;;     (compile command comint)))
+
+;; (global-set-key [remap compile] 'my/compilation-start-in-root)
 
 ;; Function to focus on the compilation window
 (defun my/focus-on-compilation-buffer (buffer desc)
@@ -119,8 +115,6 @@
           (lambda (proc)
             (when (eq (process-status proc) 'run)
               (my/focus-on-compilation-buffer (process-buffer proc) nil))))
-
-(global-set-key [remap compile] 'my/compilation-start-in-root)
 
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 (global-set-key (kbd "C->")         'mc/mark-next-like-this)
@@ -139,10 +133,44 @@
 (global-set-key (kbd "M-n") 'move-text-down)
 (global-set-key (kbd "M-p") 'move-text-up)
 
-(use-package affe
-  :config
-  ;; Manual preview key for `affe-grep'
-  (consult-customize affe-grep :preview-key "M-."))
 
-(require 'affe)
-(global-set-key (kbd "C-x C-p") 'affe-find)
+(global-set-key (kbd "C-x P p") 'affe-find)
+(global-set-key (kbd "C-x C C") 'project-compile)
+
+
+(defun my-delete-word-no-kill (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument, do this that many times.
+This command does not push text to `kill-ring'."
+  (delete-region
+   (point)
+   (progn
+     (forward-word arg)
+     (point))))
+
+(defun my-read-shell-command-advice (orig-fun &rest args)
+  "Advice to temporarily bind `kill-word' to our custom function."
+  (let ((kill-word-fn (symbol-function 'kill-word)))
+    (unwind-protect
+        (progn
+          (fset 'kill-word #'my-delete-word-no-kill)
+          (apply orig-fun args))
+      (fset 'kill-word kill-word-fn))))
+
+(advice-add 'read-shell-command :around #'my-read-shell-command-advice)
+
+
+
+(global-set-key (kbd "C-M-h") 'backward-sexp)
+(global-set-key (kbd "C-M-l") 'forward-sexp)
+
+(defun toggle-maximize-buffer ()
+  "Maximize buffer if it's not maximized, restore if it is."
+  (interactive) ;; toggle
+  (if (= 1 (length (window-list)))
+      (jump-to-register '_)
+    (progn
+      (window-configuration-to-register '_)
+      (delete-other-windows))))
+
+(global-set-key (kbd "C-x 0") 'toggle-maximize-buffer)
