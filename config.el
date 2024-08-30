@@ -8,7 +8,6 @@
 
 (load-theme 'gruber-darker t)
 (set-frame-font "Iosevka 17" nil t)
-
 (setq display-line-numbers-type 'relative)
 
 (setq org-directory "~/org/")
@@ -24,8 +23,6 @@
         (after! evil
         (define-key evil-normal-state-map (kbd ":") #'execute-extended-command)
         (define-key evil-visual-state-map (kbd ":") #'execute-extended-command))
-
-
 
 (ido-mode 1)
 (ido-everywhere 1)
@@ -87,22 +84,6 @@
 (require 'yasnippet)
 (yas-global-mode 1)
 
-
-;;; root compilation
-
-;; (defun my/compilation-start-in-root (command &optional comint)
-;;   "Start compilation in the project's root directory and focus on the compilation window."
-;;   (interactive
-;;    (list
-;;     (read-from-minibuffer "Compile command: "
-;;                           (eval compile-command))
-;;     current-prefix-arg))
-;;   (let ((default-directory (or (projectile-project-root)
-;;                                default-directory)))
-;;     (compile command comint)))
-
-;; (global-set-key [remap compile] 'my/compilation-start-in-root)
-
 ;; Function to focus on the compilation window
 (defun my/focus-on-compilation-buffer (buffer desc)
   "Focus on the compilation window BUFFER."
@@ -116,12 +97,6 @@
             (when (eq (process-status proc) 'run)
               (my/focus-on-compilation-buffer (process-buffer proc) nil))))
 
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->")         'mc/mark-next-like-this)
-(global-set-key (kbd "C-<")         'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<")     'mc/mark-all-like-this)
-(global-set-key (kbd "C-\"")        'mc/skip-to-next-like-this)
-(global-set-key (kbd "C-:")         'mc/skip-to-previous-like-this)
 
 ;;; dired mode
 (require 'dired)
@@ -160,10 +135,6 @@ This command does not push text to `kill-ring'."
 (advice-add 'read-shell-command :around #'my-read-shell-command-advice)
 
 
-
-(global-set-key (kbd "C-M-h") 'backward-sexp)
-(global-set-key (kbd "C-M-l") 'forward-sexp)
-
 (defun toggle-maximize-buffer ()
   "Maximize buffer if it's not maximized, restore if it is."
   (interactive) ;; toggle
@@ -174,3 +145,70 @@ This command does not push text to `kill-ring'."
       (delete-other-windows))))
 
 (global-set-key (kbd "C-x 0") 'toggle-maximize-buffer)
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (("C-S-c C-S-c" . mc/edit-lines)
+         ("C->" . mc/mark-next-like-this)
+         ("C-<" . mc/mark-previous-like-this)
+         ("C-}" . mc/mark-next-symbol-like-this)
+         ("C-c C-<" . mc/mark-all-like-this)))
+
+
+
+
+(defun my/rectangle-mark-cursor ()
+  (setq cursor-type '(bar . 1)))
+
+(defun my/restore-cursor ()
+  (setq cursor-type 'box))
+
+(add-hook 'rectangle-mark-mode #'my/rectangle-mark-cursor)
+
+;; Restore cursor type when exiting rectangle-mark-mode
+(defun my/rectangle-mark-mode-cursor-advice (&rest _)
+  (if (bound-and-true-p rectangle-mark-mode)
+      (my/rectangle-mark-cursor)
+    (my/restore-cursor)))
+
+(advice-add 'rectangle-mark-mode :after #'my/rectangle-mark-mode-cursor-advice)
+
+;; Remove highlighting of selected rows when in rectangle-mark-mode
+(defun my/hl-line-range-function ()
+  (when (not rectangle-mark-mode)
+    (cons (line-beginning-position) (line-beginning-position 2))))
+
+(setq hl-line-range-function #'my/hl-line-range-function)
+
+(use-package dap-mode
+  :ensure t
+  :config
+  (require 'dap-gdb-lldb)
+  (require 'dap-lldb) 
+  (require 'dap-dlv-go)
+  (dap-gdb-lldb-setup)
+
+  ;; Configure LLDB for Rust
+  (dap-register-debug-template "Rust::LLDB Run Configuration"
+                               (list :type "lldb"
+                                     :request "launch"
+                                     :name "LLDB::Run"
+                                     :program "${workspaceFolder}/target/debug/${fileBasenameNoExtension}"
+                                     :cwd "${workspaceFolder}"
+                                     :args []
+                                     :env '(("RUST_BACKTRACE" . "1"))))
+
+  ;; Configure LLDB for Go
+  (dap-register-debug-template "Go::LLDB Run Configuration"
+                               (list :type "lldb"
+                                     :request "launch"
+                                     :name "LLDB::Run"
+                                     :program "${workspaceFolder}"
+                                     :cwd "${workspaceFolder}"
+                                     :args []
+                                     :env '(("GOPATH" . "${workspaceFolder}")))))
+
+;; Enable dap-mode and dap-ui
+(dap-mode 1)
+(dap-ui-mode 1)
+
