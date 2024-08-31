@@ -20,7 +20,7 @@
         (define-key evil-visual-state-map "zz" 'my-escape)
         (define-key evil-insert-state-map "zz" 'my-escape))
 
-        (after! evil
+(after! evil
         (define-key evil-normal-state-map (kbd ":") #'execute-extended-command)
         (define-key evil-visual-state-map (kbd ":") #'execute-extended-command))
 
@@ -146,17 +146,6 @@ This command does not push text to `kill-ring'."
 
 (global-set-key (kbd "C-x 0") 'toggle-maximize-buffer)
 
-(use-package multiple-cursors
-  :ensure t
-  :bind (("C-S-c C-S-c" . mc/edit-lines)
-         ("C->" . mc/mark-next-like-this)
-         ("C-<" . mc/mark-previous-like-this)
-         ("C-}" . mc/mark-next-symbol-like-this)
-         ("C-c C-<" . mc/mark-all-like-this)))
-
-
-
-
 (defun my/rectangle-mark-cursor ()
   (setq cursor-type '(bar . 1)))
 
@@ -211,4 +200,45 @@ This command does not push text to `kill-ring'."
 ;; Enable dap-mode and dap-ui
 (dap-mode 1)
 (dap-ui-mode 1)
+
+(use-package multiple-cursors
+  :ensure t
+  :config
+  (define-key evil-emacs-state-map (kbd "C-n") 'mc/mark-next-like-this-symbol)
+
+  (define-key evil-normal-state-map (kbd "C-n")
+        (lambda ()
+        (interactive)
+        (evil-emacs-state)
+        (mc/mark-next-like-this-symbol)))
+
+  (define-key evil-visual-state-map (kbd "C-n")
+        (lambda ()
+        (interactive)
+        (evil-exit-visual-state)
+        (evil-emacs-state)
+        (mc/mark-next-like-this-symbol)))
+
+  (defun my/return-to-evil-normal-state ()
+        "Return to evil-normal-state after pressing ENTER."
+        (interactive)
+        (evil-normal-state))
+
+  (define-key evil-emacs-state-map (kbd "RET")
+        (lambda ()
+        (interactive)
+        (mc/keyboard-quit)
+        (my/return-to-evil-normal-state))))
+
+
+(defun my/rectangle-mark-and-backward ()
+  "Extend rectangle-mark selection and move backward one character."
+  (interactive)
+  (if (not rectangle-mark-mode)
+      (rectangle-mark-mode 1)
+    (rectangle-mark-mode-extend))
+  (backward-char 1))
+
+(evil-define-key '(normal visual) 'global (kbd "C-v") 'my/rectangle-mark-and-backward)
+(evil-define-key '(normal visual) 'global (kbd "C-l") 'string-rectangle)
 
