@@ -1,5 +1,20 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
+;; Enable dap-mode and dap-ui
+(dap-mode 1)
+(dap-ui-mode 1)
+
+
+(ido-mode 1)
+(ido-everywhere 1)
+
+;; Enable Company mode for completion
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
 (setq user-full-name "Salih Bozkaya aka (lord vader)"
        user-mail-address "bozkayasalih01x@gmail.com")
 
@@ -24,8 +39,6 @@
         (define-key evil-normal-state-map (kbd ":") #'execute-extended-command)
         (define-key evil-visual-state-map (kbd ":") #'execute-extended-command))
 
-(ido-mode 1)
-(ido-everywhere 1)
 (setq evil-insert-state-cursor '(box "yellow")
       evil-normal-state-cursor '(box "yellow"))
 
@@ -77,12 +90,6 @@
   (setq lsp-headerline-breadcrumb-enable nil)
   (setq lsp-keymap-prefix "C-c l"))
 
-;; Enable Company mode for completion
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-
-(require 'yasnippet)
-(yas-global-mode 1)
 
 ;; Function to focus on the compilation window
 (defun my/focus-on-compilation-buffer (buffer desc)
@@ -197,38 +204,12 @@ This command does not push text to `kill-ring'."
                                      :args []
                                      :env '(("GOPATH" . "${workspaceFolder}")))))
 
-;; Enable dap-mode and dap-ui
-(dap-mode 1)
-(dap-ui-mode 1)
 
 (use-package multiple-cursors
   :ensure t
   :config
-  (define-key evil-emacs-state-map (kbd "C-n") 'mc/mark-next-like-this-symbol)
-
-  (define-key evil-normal-state-map (kbd "C-n")
-        (lambda ()
-        (interactive)
-        (evil-emacs-state)
-        (mc/mark-next-like-this-symbol)))
-
-  (define-key evil-visual-state-map (kbd "C-n")
-        (lambda ()
-        (interactive)
-        (evil-exit-visual-state)
-        (evil-emacs-state)
-        (mc/mark-next-like-this-symbol)))
-
-  (defun my/return-to-evil-normal-state ()
-        "Return to evil-normal-state after pressing ENTER."
-        (interactive)
-        (evil-normal-state))
-
-  (define-key evil-emacs-state-map (kbd "RET")
-        (lambda ()
-        (interactive)
-        (mc/keyboard-quit)
-        (my/return-to-evil-normal-state))))
+  (define-key evil-emacs-state-map (kbd "C-n") 'mc/mark-next-like-this)
+  (define-key evil-normal-state-map (kbd "C-n") 'mc/mark-next-like-this))
 
 
 (defun my/rectangle-mark-and-backward ()
@@ -241,4 +222,5 @@ This command does not push text to `kill-ring'."
 
 (evil-define-key '(normal visual) 'global (kbd "C-v") 'my/rectangle-mark-and-backward)
 (evil-define-key '(normal visual) 'global (kbd "C-l") 'string-rectangle)
+
 
