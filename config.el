@@ -40,7 +40,11 @@
         (define-key evil-visual-state-map (kbd ":") #'execute-extended-command))
 
 (setq evil-insert-state-cursor '(box "yellow")
-      evil-normal-state-cursor '(box "yellow"))
+      evil-normal-state-cursor '(box "yellow")
+      evil-emacs-state-cursor  '(box "yellow"))
+
+(custom-set-faces
+ '(mc/cursor-face ((t (:inherit cursor)))))
 
 (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 
@@ -223,4 +227,23 @@ This command does not push text to `kill-ring'."
 (evil-define-key '(normal visual) 'global (kbd "C-v") 'my/rectangle-mark-and-backward)
 (evil-define-key '(normal visual) 'global (kbd "C-l") 'string-rectangle)
 
-
+(setq-default mode-line-format
+              '("%e"
+                mode-line-front-space
+                mode-line-mule-info
+                mode-line-client
+                mode-line-modified
+                mode-line-remote
+                ;; mode-line-frame-identification
+                ;; mode-line-buffer-identification
+                (:eval (when buffer-file-name
+                         (abbreviate-file-name buffer-file-name)))
+                "   "
+                mode-line-position
+                "  "
+                (vc-mode vc-mode)
+                "  "
+                "  "
+                mode-line-modes
+                mode-line-misc-info
+                mode-line-end-spaces))
