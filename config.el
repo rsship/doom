@@ -1,29 +1,35 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
-
-;; Enable dap-mode and dap-ui
-(dap-mode 1)
-(dap-ui-mode 1)
-
-
-(ido-mode 1)
-(ido-everywhere 1)
-
-;; Enable Company mode for completion
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
-
-(require 'yasnippet)
-(yas-global-mode 1)
-
 (setq user-full-name "Salih Bozkaya aka (lord vader)"
        user-mail-address "bozkayasalih01x@gmail.com")
 
-(setq doom-leader-key "C-x"
-      doom-localleader-key "C-x")
+(dap-mode 1)
+(which-key-mode -1)
+
+(use-package vertico
+  :init
+  (vertico-mode)
+  (vertico-flat-mode))
+
+(use-package orderless
+        :custom
+        (completion-styles '(orderless basic))
+        (completion-category-defaults nil)
+        (completion-category-overrides '((file (styles partial-completion)))))
+
+(setq minor-mode-alist nil)
+(setq minor-mode-map-alist nil)
+(require 'yasnippet)
+(yas-global-mode 1)
 
 (load-theme 'gruber-darker t)
 (set-frame-font "Iosevka 17" nil t)
 (setq display-line-numbers-type 'relative)
+
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+
+(setq doom-leader-key "C-x"
+      doom-localleader-key "C-x")
 
 (setq org-directory "~/org/")
 (after! evil
@@ -34,10 +40,6 @@
         (define-key evil-normal-state-map "zz" 'my-escape)
         (define-key evil-visual-state-map "zz" 'my-escape)
         (define-key evil-insert-state-map "zz" 'my-escape))
-
-(after! evil
-        (define-key evil-normal-state-map (kbd ":") #'execute-extended-command)
-        (define-key evil-visual-state-map (kbd ":") #'execute-extended-command))
 
 (setq evil-insert-state-cursor '(box "yellow")
       evil-normal-state-cursor '(box "yellow")
@@ -54,12 +56,9 @@
       "C-x C-]" #'split-window-vertically
       "C-x k" #'kill-current-buffer)
 
-(global-set-key (kbd "C-x SPC") 'rectangle-mark-mode)
+;;; custom elisp functions
+;;; comment in/out
 
-
-;;;;;; custom elisp functions
-
-;;; comment in or out
 (defun toggle-comment-region ()
   "Toggle comment on region if active, otherwise on current line."
   (interactive)
@@ -73,15 +72,10 @@
 
 (setq doom-asterisk-buffer-regexp (rx bos "*" (* (not (any "*"))) "*" eos))
 
-(after! ido
-  (add-to-list 'ido-ignore-buffers doom-asterisk-buffer-regexp))
 
-;; Hide these buffers from +workspace/display
 (setq +workspaces-main-buffer-filter
       (lambda (buf)
         (not (string-match-p doom-asterisk-buffer-regexp (buffer-name buf)))))
-
-
 
 (after! lsp-mode
   (setq lsp-diagnostics-provider :none)
@@ -95,7 +89,6 @@
   (setq lsp-keymap-prefix "C-c l"))
 
 
-;; Function to focus on the compilation window
 (defun my/focus-on-compilation-buffer (buffer desc)
   "Focus on the compilation window BUFFER."
   (when (buffer-live-p buffer)
@@ -107,8 +100,6 @@
           (lambda (proc)
             (when (eq (process-status proc) 'run)
               (my/focus-on-compilation-buffer (process-buffer proc) nil))))
-
-
 ;;; dired mode
 (require 'dired)
 (setq-default dired-dwim-target t)
@@ -119,10 +110,8 @@
 (global-set-key (kbd "M-n") 'move-text-down)
 (global-set-key (kbd "M-p") 'move-text-up)
 
-
-(global-set-key (kbd "C-x P p") 'affe-find)
-(global-set-key (kbd "C-x C C") 'project-compile)
-
+(global-set-key(kbd "C-x P p") 'affe-find)
+(global-set-key(kbd "C-x C-C") 'project-compile)
 
 (defun my-delete-word-no-kill (arg)
   "Delete characters forward until encountering the end of a word.
@@ -165,56 +154,40 @@ This command does not push text to `kill-ring'."
 
 (add-hook 'rectangle-mark-mode #'my/rectangle-mark-cursor)
 
-;; Restore cursor type when exiting rectangle-mark-mode
 (defun my/rectangle-mark-mode-cursor-advice (&rest _)
   (if (bound-and-true-p rectangle-mark-mode)
       (my/rectangle-mark-cursor)
     (my/restore-cursor)))
 
 (advice-add 'rectangle-mark-mode :after #'my/rectangle-mark-mode-cursor-advice)
-
-;; Remove highlighting of selected rows when in rectangle-mark-mode
 (defun my/hl-line-range-function ()
   (when (not rectangle-mark-mode)
     (cons (line-beginning-position) (line-beginning-position 2))))
 
 (setq hl-line-range-function #'my/hl-line-range-function)
 
-(use-package dap-mode
-  :ensure t
-  :config
-  (require 'dap-gdb-lldb)
-  (require 'dap-lldb) 
-  (require 'dap-dlv-go)
-  (dap-gdb-lldb-setup)
-
-  ;; Configure LLDB for Rust
-  (dap-register-debug-template "Rust::LLDB Run Configuration"
-                               (list :type "lldb"
-                                     :request "launch"
-                                     :name "LLDB::Run"
-                                     :program "${workspaceFolder}/target/debug/${fileBasenameNoExtension}"
-                                     :cwd "${workspaceFolder}"
-                                     :args []
-                                     :env '(("RUST_BACKTRACE" . "1"))))
-
-  ;; Configure LLDB for Go
-  (dap-register-debug-template "Go::LLDB Run Configuration"
-                               (list :type "lldb"
-                                     :request "launch"
-                                     :name "LLDB::Run"
-                                     :program "${workspaceFolder}"
-                                     :cwd "${workspaceFolder}"
-                                     :args []
-                                     :env '(("GOPATH" . "${workspaceFolder}")))))
-
-
 (use-package multiple-cursors
   :ensure t
   :config
+  (define-key input-decode-map [?\C-m] [C-m])
   (define-key evil-emacs-state-map (kbd "C-n") 'mc/mark-next-like-this)
-  (define-key evil-normal-state-map (kbd "C-n") 'mc/mark-next-like-this))
+  (define-key evil-normal-state-map (kbd "C-n") 'mc/mark-next-like-this)
+  (define-key evil-emacs-state-map (kbd "C-.") 'mc/skip-to-next-like-this)
+  (define-key evil-normal-state-map (kbd "C-.") 'mc/skip-to-next-like-this)
+  (define-key evil-emacs-state-map (kbd "C-,") 'mc/skip-to-previous-like-this)
+  (define-key evil-normal-state-map (kbd "C-,") 'mc/skip-to-previous-like-this)
+  (define-key evil-normal-state-map (kbd "C-\\") 'mc/mmlte--down)
+  (define-key evil-emacs-state-map (kbd "C-\\") 'mc/mmlte--down)
+  (define-key evil-emacs-state-map (kbd "<return>") 'mc/keyboard-quit))
 
+
+(after! multiple-cursors
+  (defun my-mc-insert-newline ()
+    "Insert a newline and indent at all cursor positions."
+    (interactive)
+    (mc/execute-command-for-all-cursors 'newline-and-indent))
+
+  (define-key mc/keymap (kbd "M-<return>") 'my-mc-insert-newline))
 
 (defun my/rectangle-mark-and-backward ()
   "Extend rectangle-mark selection and move backward one character."
@@ -224,26 +197,103 @@ This command does not push text to `kill-ring'."
     (rectangle-mark-mode-extend))
   (backward-char 1))
 
-(evil-define-key '(normal visual) 'global (kbd "C-v") 'my/rectangle-mark-and-backward)
-(evil-define-key '(normal visual) 'global (kbd "C-l") 'string-rectangle)
+(define-key evil-normal-state-map (kbd ":") 'ignore)
+(define-key evil-visual-state-map (kbd ":") 'ignore)
+(global-set-key (kbd "C-x c-c") 'ignore )
 
-(setq-default mode-line-format
-              '("%e"
-                mode-line-front-space
-                mode-line-mule-info
-                mode-line-client
-                mode-line-modified
-                mode-line-remote
-                ;; mode-line-frame-identification
-                ;; mode-line-buffer-identification
-                (:eval (when buffer-file-name
-                         (abbreviate-file-name buffer-file-name)))
-                "   "
-                mode-line-position
-                "  "
-                (vc-mode vc-mode)
-                "  "
-                "  "
-                mode-line-modes
-                mode-line-misc-info
-                mode-line-end-spaces))
+(setq-default compilation-scroll-output t
+              make-backup-files nil)
+
+(setq compilation-always-kill t)
+(setq read-process-output-max (* 1024 1024))
+(setq gc-cons-threshold 100000000)
+
+
+(when (eq system-type 'darwin)
+  (setq ns-command-modifier 'meta)
+  (setq ns-option-modifier 'none))
+
+(use-package emacs
+  :custom
+  (enable-recursive-minibuffers t)
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  :init
+  (defun crm-indicator (args)
+    (cons (format "[CRM%s] %s"
+                  (replace-regexp-in-string
+                   "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+                   crm-separator)
+                  (car args))
+          (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode))
+
+(defun hide-minor-modes ()
+  (setq minor-mode-alist nil))
+(add-to-list 'mode-line-format '(:eval (hide-minor-modes)) t)
+
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (when (memq window-system '(mac ns x))
+    (exec-path-from-shell-initialize)))
+
+;; Rust mode setup
+(use-package rust-mode
+  :ensure t
+  :hook (rust-mode . lsp))
+
+(use-package lsp-mode
+  :ensure t
+  :hook (rust-mode . lsp)
+  :commands lsp)
+
+(use-package dap-mode
+  :ensure t
+  :config
+  (dap-auto-configure-mode)
+  (require 'dap-lldb)
+)
+(use-package dap-ui
+  :ensure t
+  :config
+  (dap-ui-mode 1)
+  (dap-tooltip-mode 1))
+
+(setq dap-lldb-debug-program `("/usr/bin/lldb"))
+
+(defun cargo-project-root ()
+  (let ((root (locate-dominating-file default-directory "Cargo.toml")))
+    (unless root
+      (error "Not inside a Cargo project"))
+    root))
+
+(setq dap-lldb-debugged-program-function
+      (lambda () (read-file-name "Select binary: " (concat (cargo-project-root) "target/debug/"))))
+
+
+
+(setq compilation-window-height 20)
+
+(defun my-display-buffer-function (buffer alist)
+  (if (and (eq major-mode 'compilation-mode)
+           (not (get-buffer-window buffer)))
+      (let ((window (split-window-vertically)))
+        (set-window-buffer window buffer)
+        window)
+    (display-buffer-use-some-window buffer alist)))
+
+(setq display-buffer-function 'my-display-buffer-function)
+
+(add-to-list 'display-buffer-alist
+             '("*compilation*"
+               (display-buffer-reuse-window
+                display-buffer-in-side-window)
+               (side . bottom)
+               (reusable-frames . visible)
+               (window-height . 0.3)))
+
+

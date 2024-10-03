@@ -22,16 +22,16 @@
 
        :completion
        company           ; the ultimate code completion backend
-       ;;(corfu +orderless)  ; complete with cap(f), cape and a flying feather!
-       ;;helm              ; the *other* search engine for love and life
-       ;; ido               ; the other *other* search engine...
-       ;;ivy               ; a search engine for love and life
-       vertico           ; the search engine of the future
+       ;; (corfu +orderless)  ; complete with cap(f), cape and a flying feather!
+       ;; helm                ; the *other* search engine for love and life
+       ;; ido                 ; the other *other* search engine...
+       ;; ivy                 ; a search engine for love and life
+       vertico             ; the search engine of the future
 
        :ui
-       ;;deft              ; notational velocity for Emacs
-       doom              ; what makes DOOM look the way it does
-       doom-dashboard    ; a nifty splash screen for Emacs
+       deft              ; notational velocity for Emacs
+       ;; doom              ; what makes DOOM look the way it does
+       ;; doom-dashboard    ; a nifty splash screen for Emacs
        ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
        ;;(emoji +unicode)  ; 🙂
        hl-todo           ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
@@ -70,7 +70,7 @@
        :emacs
        dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
-       ibuffer         ; interactive buffer management
+       ;; ibuffer           ; interactive buffer management
        undo              ; persistent, smarter undo for your inevitable mistakes
        vc                ; version-control and Emacs, sitting in a tree
 
@@ -89,7 +89,7 @@
        ;;ansible
        ;;biblio            ; Writes a PhD for you (citation needed)
        ;;collab            ; buffers with friends
-       ;;debugger          ; FIXME stepping through code, to help you add bugs
+       debugger          ; FIXME stepping through code, to help you add bugs
        ;;direnv
        ;;docker
        ;;editorconfig      ; let someone else argue about tabs vs spaces
@@ -122,12 +122,16 @@
        markdown          ; writing docs for people to ignore
        latex             ; writing papers in Emacs has never been so fun
        org               ; organize your plain life in plain text
-       python            ; beautiful is better than ugly
        (rust + lsp)      ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
        (scala + lsp)     ; java, but good
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        yaml              ; JSON, but readable
-       ;; zig               ; C, but simpler
+       (haskell +lsp)    ; a language that's lazier than I am
+       nim               ; python + lisp at the speed of c
+       nix               ; I hereby declare "nix geht mehr!"
+       ocaml             ; an objective camel
+       zig               ; C, but simpler
+       python
        ;;sml
        ;;solidity          ; do you need a blockchain? No.
        ;;swift             ; who asked for emoji variables?
@@ -155,7 +159,6 @@
        ;;fstar             ; (dependent) types and (monadic) effects and Z3
        ;;gdscript          ; the language you waited for
        ;;(graphql +lsp)    ; Give queries a REST
-       ;;(haskell +lsp)    ; a language that's lazier than I am
        ;;hy                ; readability of scheme w/ speed of python
        ;;idris             ; a language you can depend on
        (java +lsp)       ; the poster child for carpal tunnel syndrome
@@ -164,9 +167,6 @@
        ;;kotlin            ; a better, slicker Java(Script)
        ;;lean              ; for folks with too much to prove
        ;;ledger            ; be audit you can be
-       ;;nim               ; python + lisp at the speed of c
-       ;;nix               ; I hereby declare "nix geht mehr!"
-       ;;ocaml             ; an objective camel
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional

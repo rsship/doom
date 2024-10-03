@@ -55,3 +55,7 @@
 (package! flycheck :disable t)
 (package! move-text)
 (package! affe)
+(package-initialize)
+(add-to-list 'load-path "~/.config/doom/gnu-elpa-keyring-update/")
+(load "~/.config/doom/gnu-elpa-keyring-update/gnu-elpa-keyring-update.el")
+(add-to-list 'package-archives '("gnu-devel" . "https://elpa.gnu.org/devel/"))
