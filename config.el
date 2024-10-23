@@ -1,8 +1,8 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 (setq user-full-name "Salih Bozkaya aka (lord vader)"
        user-mail-address "bozkayasalih01x@gmail.com")
 
-(dap-mode 1)
+(dap-mode -1)
 (which-key-mode -1)
 
 (use-package vertico
@@ -25,36 +25,54 @@
 (set-frame-font "Iosevka 17" nil t)
 (setq display-line-numbers-type 'relative)
 
-(require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
+(use-package company
+  :init
+  (setq company-idle-delay 0.2)
+  ;; (setq company-minimum-prefix-length 0) 
+  (setq company-frontends '(company-preview-if-just-one-frontend)) 
+  :hook
+  (after-init . global-company-mode))
+
+
+(use-package yasnippet
+  :init
+  (yas-global-mode 1))
+
+
 
 (setq doom-leader-key "C-x"
       doom-localleader-key "C-x")
 
 (setq org-directory "~/org/")
-(after! evil
-        (defun my-escape ()
-        (interactive)
-        (evil-force-normal-state))
-
-        (define-key evil-normal-state-map "zz" 'my-escape)
-        (define-key evil-visual-state-map "zz" 'my-escape)
-        (define-key evil-insert-state-map "zz" 'my-escape))
-
-(setq evil-insert-state-cursor '(box "yellow")
-      evil-normal-state-cursor '(box "yellow")
-      evil-emacs-state-cursor  '(box "yellow"))
 
 (custom-set-faces
  '(mc/cursor-face ((t (:inherit cursor)))))
 
 (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 
+(require 'evil)
 
-(map! "C-x C-p" #'evil-window-up
-      "C-x C-n" #'evil-window-down
-      "C-x C-]" #'split-window-vertically
-      "C-x k" #'kill-current-buffer)
+(defun my-escape ()
+        (interactive)
+        (evil-force-normal-state))
+
+(define-key evil-normal-state-map (kbd "zz") 'my-escape)
+(define-key evil-visual-state-map (kbd "zz") 'my-escape)
+(define-key evil-insert-state-map (kbd "zz") 'my-escape)
+;; (define-key evil-normal-state-map (kbd "v") 'rectangle-mark-mode)
+;; (define-key evil-normal-state-map (kbd "V") 'rectangle-mark-mode)
+
+
+
+(define-key evil-normal-state-map  (kbd "C-x C-p") 'evil-window-up)
+(define-key evil-normal-state-map  (kbd "C-x C-n") 'evil-window-down)
+(define-key evil-normal-state-map  (kbd "C-x C-]") 'split-window-vertically)
+(define-key evil-normal-state-map  (kbd "C-x k") 'kill-current-buffer)
+
+(setq evil-insert-state-cursor '(box "yellow")
+      evil-normal-state-cursor '(box "yellow")
+      evil-emacs-state-cursor  '(box "yellow"))
+
 
 ;;; custom elisp functions
 ;;; comment in/out
@@ -296,4 +314,6 @@ This command does not push text to `kill-ring'."
                (reusable-frames . visible)
                (window-height . 0.3)))
 
-
+;; TODO: yaml mode has funcky bug so temporaryly disabled yaml mode. instead of yaml mode i've activated sh-mode
+(add-to-list 'auto-mode-alist '("\\.yaml\\'" . sh-mode))
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . sh-mode))

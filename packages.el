@@ -59,3 +59,12 @@
 (add-to-list 'load-path "~/.config/doom/gnu-elpa-keyring-update/")
 (load "~/.config/doom/gnu-elpa-keyring-update/gnu-elpa-keyring-update.el")
 (add-to-list 'package-archives '("gnu-devel" . "https://elpa.gnu.org/devel/"))
+;; (package! dtrt-indent :disable t)
+;; (package! better-jumper :disable t)
+;; (package! evil-snipe :disable t)
+;; (package! evil-goggles :disable t)
+;; (package! evil-escape :disable t)
+;; (package! ws-butler :disable t)
+;; (package! vi-tilde-fringe :disable t)
+;; (package! ws :disable t)
+

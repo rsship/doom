@@ -14,3 +14,5 @@
 ;;(put 'customize-themes 'disabled nil)
 (put 'customize-variable 'disabled nil)
 (put 'customize-group 'disabled nil)
+(put 'upcase-region 'disabled nil)
+(put 'scroll-left 'disabled nil)
